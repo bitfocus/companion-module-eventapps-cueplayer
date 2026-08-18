@@ -1,0 +1,23 @@
+{
+  "id": "eventapps-cueplayer",
+  "name": "eventapps-cueplayer",
+  "shortname": "CuePlayer",
+  "description": "Control EventApps CuePlayer — cue playback and jingles — over its built-in HTTP API.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": "https://github.com/eventapps-online/companion-module-eventapps-cueplayer.git",
+  "bugs": "https://github.com/eventapps-online/companion-module-eventapps-cueplayer/issues",
+  "maintainers": [
+    { "name": "EventApps", "email": "info@eventapps.online" }
+  ],
+  "legacyIds": [],
+  "runtime": {
+    "type": "node18",
+    "api": "nodejs-ipc",
+    "apiVersion": "1.0.0",
+    "entrypoint": "../dist/main.js"
+  },
+  "manufacturer": "EventApps",
+  "products": ["CuePlayer"],
+  "keywords": ["audio", "playback", "cue", "jingle"]
+}

@@ -5,8 +5,8 @@
   "description": "Control EventApps CuePlayer — cue playback and jingles — over its built-in HTTP API.",
   "version": "1.0.0",
   "license": "MIT",
-  "repository": "https://github.com/eventapps-online/companion-module-eventapps-cueplayer.git",
-  "bugs": "https://github.com/eventapps-online/companion-module-eventapps-cueplayer/issues",
+  "repository": "https://github.com/bitfocus/companion-module-eventapps-cueplayer.git",
+  "bugs": "https://github.com/bitfocus/companion-module-eventapps-cueplayer/issues",
   "maintainers": [
     { "name": "EventApps", "email": "info@eventapps.online" }
   ],

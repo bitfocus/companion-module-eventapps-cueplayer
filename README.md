@@ -6,8 +6,8 @@ CuePlayer's built-in HTTP API.
 
 ## Setup
 
-1. In CuePlayer: **Settings → Vzdálené ovládání** → enable it (note the port,
-   default `8770`). If you turned on **"Vyžadovat token"**, copy the token.
+1. In CuePlayer: **Settings → Remote control** → enable it (note the port,
+   default `8770`). If you turned on **Require token**, copy the token.
 2. In Companion: add the **EventApps: CuePlayer** connection and fill in the
    CuePlayer machine's IP, the port, and the token (leave blank if not required).
 
@@ -30,12 +30,17 @@ CuePlayer's built-in HTTP API.
 
 ## Build
 
+This module uses Yarn 4 (via Corepack) and Node 22.
+
 ```
-npm install
-npm run build       # -> dist/main.js
+corepack enable
+yarn install
+yarn build          # -> dist/main.js
+yarn lint
 ```
 
-Load it in Companion via **Developer modules path** pointed at this folder.
+Load it in Companion via **Developer modules path** pointed at the folder that
+contains this one.
 
 ## Protocol
 

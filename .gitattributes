@@ -1,12 +1,1 @@
-# Keep line endings consistent across platforms: store text as LF in the repo
-# (and check it out as LF everywhere, so Windows autocrlf doesn't churn diffs).
 * text=auto eol=lf
-
-# Binaries — never apply text conversion.
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.zip binary
-*.tgz binary

@@ -7,8 +7,8 @@ HTTP remote-control server.
 
 - **CuePlayer IP** — the IP address of the machine running CuePlayer.
 - **Port** — the remote-control port (default `8770`), shown in CuePlayer under
-  *Settings → Vzdálené ovládání*.
-- **Token** — only needed if you enabled *"Vyžadovat token"* in CuePlayer.
+  _Settings → Remote control_.
+- **Token** — only needed if you enabled _Require token_ in CuePlayer.
   Copy it from the same settings dialog. Leave blank otherwise.
 - **Poll interval** — how often Companion reads state for feedbacks/countdowns.
 - **Amber / Red under** — countdown colour thresholds, in seconds.

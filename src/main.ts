@@ -95,13 +95,14 @@ export default class CuePlayerInstance extends InstanceBase<CuePlayerSchema> {
 			this.checkAllFeedbacks()
 		} catch (e) {
 			// Report the failure only on the transition, not on every poll tick,
-			// so an unreachable host does not spam the log.
+			// so an unreachable host does not spam the log. Variables and
+			// feedbacks are refreshed on the same transition, so the
+			// 'connection' variable reads offline even when the host is
+			// unreachable from the very first poll.
 			if (!this.failed) {
 				this.failed = true
-				this.updateStatus(InstanceStatus.ConnectionFailure, String((e as Error).message))
-			}
-			if (this.online) {
 				this.online = false
+				this.updateStatus(InstanceStatus.ConnectionFailure, String((e as Error).message))
 				this.setVariableValues(variableValues(this))
 				this.checkAllFeedbacks()
 			}

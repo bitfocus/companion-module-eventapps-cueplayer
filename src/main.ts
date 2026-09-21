@@ -26,31 +26,48 @@ export default class CuePlayerInstance extends InstanceBase<CuePlayerSchema> {
 
 	private timer: NodeJS.Timeout | undefined
 	private sig = ''
+	private failed = false
 
 	async init(config: CuePlayerConfig): Promise<void> {
-		this.config = config
-		this.api = new CueApi(config.host, config.port, config.token)
-		this.rebuildDefinitions()
-		this.updateStatus(InstanceStatus.Connecting)
-		this.restartPolling()
+		this.applyConfig(config)
 	}
 
 	async destroy(): Promise<void> {
-		if (this.timer) clearInterval(this.timer)
-		this.timer = undefined
+		this.stopPolling()
 	}
 
 	async configUpdated(config: CuePlayerConfig): Promise<void> {
-		this.config = config
-		this.api = new CueApi(config.host, config.port, config.token)
-		this.online = false
-		this.sig = ''
-		this.rebuildDefinitions()
-		this.restartPolling()
+		this.applyConfig(config)
 	}
 
 	getConfigFields(): SomeCompanionConfigField[] {
 		return getConfigFields()
+	}
+
+	// Shared by init() and configUpdated(): reset connection state, then either
+	// start polling (host is set) or stop it entirely and report BadConfig once.
+	// Polling resumes from configUpdated() as soon as the config becomes valid.
+	private applyConfig(config: CuePlayerConfig): void {
+		this.config = config
+		this.api = new CueApi(config.host, config.port, config.token)
+		this.online = false
+		this.failed = false
+		this.sig = ''
+		this.rebuildDefinitions()
+		this.stopPolling()
+		if (!config.host) {
+			this.updateStatus(InstanceStatus.BadConfig, 'Set the CuePlayer IP address')
+			return
+		}
+		this.updateStatus(InstanceStatus.Connecting)
+		const iv = Math.max(100, Number(this.config.poll) || 250)
+		this.timer = setInterval(() => void this.poll(), iv)
+		void this.poll()
+	}
+
+	private stopPolling(): void {
+		if (this.timer) clearInterval(this.timer)
+		this.timer = undefined
 	}
 
 	rebuildDefinitions(): void {
@@ -61,20 +78,10 @@ export default class CuePlayerInstance extends InstanceBase<CuePlayerSchema> {
 		this.setPresetDefinitions(structure, presets)
 	}
 
-	private restartPolling(): void {
-		if (this.timer) clearInterval(this.timer)
-		const iv = Math.max(100, Number(this.config.poll) || 250)
-		this.timer = setInterval(() => void this.poll(), iv)
-		void this.poll()
-	}
-
 	private async poll(): Promise<void> {
-		if (!this.config.host) {
-			this.updateStatus(InstanceStatus.BadConfig, 'Set the CuePlayer IP address')
-			return
-		}
 		try {
 			this.state = await this.api.fetchState()
+			this.failed = false
 			if (!this.online) {
 				this.online = true
 				this.updateStatus(InstanceStatus.Ok)
@@ -87,9 +94,17 @@ export default class CuePlayerInstance extends InstanceBase<CuePlayerSchema> {
 			this.setVariableValues(variableValues(this))
 			this.checkAllFeedbacks()
 		} catch (e) {
-			this.online = false
-			this.updateStatus(InstanceStatus.ConnectionFailure, String((e as Error).message))
-			this.setVariableValues(variableValues(this))
+			// Report the failure only on the transition, not on every poll tick,
+			// so an unreachable host does not spam the log.
+			if (!this.failed) {
+				this.failed = true
+				this.updateStatus(InstanceStatus.ConnectionFailure, String((e as Error).message))
+			}
+			if (this.online) {
+				this.online = false
+				this.setVariableValues(variableValues(this))
+				this.checkAllFeedbacks()
+			}
 		}
 	}
 
